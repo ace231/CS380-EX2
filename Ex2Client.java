@@ -16,10 +16,11 @@ import java.nio.ByteBuffer;
 
 
 public class Ex2Client {
-	// use System.out.println(String.format("0x%08X", 234));
+	
 	public static void main(String[] args) {
 		// Byte array to hold 100 bytes
 		byte[] serverSeq = new byte[100];
+		// int variables to hold incoming bytes
 		int first4Bits, second4Bits;
 		
 		try(Socket socket = new Socket("18.221.102.182", 38102)) {
@@ -33,7 +34,7 @@ public class Ex2Client {
 			
 			// Creating client output stream to send messages to server
 			OutputStream os = socket.getOutputStream();
-			PrintStream out = new PrintStream(os, true, "UTF-8");
+			//PrintStream out = new PrintStream(os, true, "UTF-8");
 			
 			int arrIndex = 0;
 			System.out.printf("Received bytes:\n  ");
@@ -43,6 +44,7 @@ public class Ex2Client {
 				first4Bits = is.read();
 				int temp = first4Bits;
 				String byteString = Integer.toHexString(first4Bits);
+				
 				// Temp bit shifted 4 times to allow room for next 4 bits
 				temp = temp << 4;
 				
@@ -70,14 +72,17 @@ public class Ex2Client {
 			
 			is = socket.getInputStream();
 			int response = is.read();
+			
 			if(response == 0) {
-				System.out.println("BAD RESPONSE.");
+				System.out.println("Response BAD...");
 			} else if(response == 1) {
-				System.out.println("Good response.");
+				System.out.println("Response good.");
 			}
 			
 		} catch(Exception e) {
 			System.out.println("Something went wrong...");
-		}
-	}
+		} // End of try catch
+		
+	}// End of main
+
 }
