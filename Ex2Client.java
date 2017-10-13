@@ -37,7 +37,7 @@ public class Ex2Client {
 			//PrintStream out = new PrintStream(os, true, "UTF-8");
 			
 			int arrIndex = 0;
-			System.out.printf("Received bytes:\n  ");
+			System.out.println("Received bytes:");
 			for(int i = 0; i < 100; i++) {
 				
 				// First 4 bits read and saved into temp
@@ -53,26 +53,42 @@ public class Ex2Client {
 				byteString = byteString + Integer.toHexString(second4Bits);
 				temp = temp | second4Bits;
 				
+				if(arrIndex % 10 == 0) {System.out.print(" ");}
 				System.out.print(byteString);
 				serverSeq[arrIndex] =  (byte)(temp);
 				arrIndex++;
-				if(arrIndex % 10 == 0) {System.out.print("\n  ");}
+				if(arrIndex % 10 == 0) {System.out.println();}
 			}
 			
+			// New CRC32 object created using byte array from server.
+			// An offset of 0 is used and the constructor is told the byte
+			// array length is 100
 			CRC32 crcCode = new CRC32();
 			crcCode.update(serverSeq, 0, 100);
-			String crcStr = Long.toHexString(crcCode.getValue());
-			System.out.println("Generated CRC32: " + crcStr);
 			
+			// CRC32 returned as a long value then printed
+			long crcVal = crcCode.getValue();
+			System.out.println("Generated CRC32: " + crcVal);
+			
+			// Byte array of size 4 created to hold 32 bit CRC value
 			byte[] crcToServer = new byte[4];
+			/*
+			 * ByteBuffer used to easily input 32 bit CRC into a byte array.
+			 * However the getValue method for CRC32 objects returns a long value,
+			 * which is 64 bits in size. To get around this the CRC long value
+			 * is cast into an int value, and then shoved into the ByteBuffer.
+			 * That data is then trasnferred to the crcToServer byte array with
+			 * the array() method of the ByteBuffer class
+			 */
 			ByteBuffer crcBytes = ByteBuffer.allocate(4);
-			crcBytes.putInt((int)(crcCode.getValue()));
+			crcBytes.putInt((int)(crcVal));
 			crcToServer = crcBytes.array();
-			os.write(crcToServer);
+			os.write(crcToServer);	// Sending byte array to server
 			
 			is = socket.getInputStream();
 			int response = is.read();
 			
+			// Checking response
 			if(response == 0) {
 				System.out.println("Response BAD...");
 			} else if(response == 1) {
