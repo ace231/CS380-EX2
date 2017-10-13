@@ -29,7 +29,7 @@ public class Ex2Client {
 			String address = socket.getInetAddress().getHostAddress();
 			System.out.printf("Connected to server: %s%n", address);
 			
-			// Creating client input stream to receive messages from server	
+			// Creating client input stream to receive messages from server
 			InputStream is = socket.getInputStream();
 			
 			// Creating client output stream to send messages to server
